@@ -2,6 +2,7 @@ package com.neppo.cursospringboot.CursoSpringBoot.services;
 
 
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Categoria;
+import com.neppo.cursospringboot.CursoSpringBoot.dto.CategoriaDTO;
 import com.neppo.cursospringboot.CursoSpringBoot.repositories.CategoriaRepository;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.DataIntegrityException;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.ObjectNotFoundException;
@@ -54,7 +55,9 @@ public class CategoriaService {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction),
                 orderBy);
         return  repo.findAll(pageRequest);
+    }
 
-
+    public Categoria fromDTO(CategoriaDTO objDto){
+        return new Categoria(objDto.getId(),  objDto.getNome());
     }
 }

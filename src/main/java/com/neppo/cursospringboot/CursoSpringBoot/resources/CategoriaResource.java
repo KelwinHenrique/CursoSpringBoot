@@ -4,6 +4,7 @@ import com.neppo.cursospringboot.CursoSpringBoot.domain.Categoria;
 import com.neppo.cursospringboot.CursoSpringBoot.dto.CategoriaDTO;
 import com.neppo.cursospringboot.CursoSpringBoot.services.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -56,6 +57,18 @@ public class CategoriaResource {
 
         return ResponseEntity.ok().body(listDto);
     }
+
+    @RequestMapping(value ="/page" ,method = RequestMethod.GET)
+    public ResponseEntity<Page<CategoriaDTO>> findPage(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                       @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
+                                                       @RequestParam(value = "orderBy", defaultValue = "nome") String orderBy,
+                                                       @RequestParam(value = "direction", defaultValue = "ASC") String direction){
+        Page<Categoria> list = service.findPage(page,  linesPerPage,  orderBy, direction);
+        Page<CategoriaDTO> listDto = list.map(obj -> new CategoriaDTO(obj));
+        return ResponseEntity.ok().body(listDto);
+    }
+
+
 
 
 

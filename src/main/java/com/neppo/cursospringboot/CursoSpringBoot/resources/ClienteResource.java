@@ -3,13 +3,16 @@ package com.neppo.cursospringboot.CursoSpringBoot.resources;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Cliente;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Cliente;
 import com.neppo.cursospringboot.CursoSpringBoot.dto.ClienteDTO;
+import com.neppo.cursospringboot.CursoSpringBoot.dto.ClienteNewDTO;
 import com.neppo.cursospringboot.CursoSpringBoot.services.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +59,16 @@ public class ClienteResource {
         Page<Cliente> list = service.findPage(page,  linesPerPage,  orderBy, direction);
         Page<ClienteDTO> listDto = list.map(obj -> new ClienteDTO(obj));
         return ResponseEntity.ok().body(listDto);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<Void> Insert(@Valid @RequestBody ClienteNewDTO objDto){
+        Cliente obj = service.fromDTO(objDto);
+        obj = service.insert(obj);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
+                .buildAndExpand(obj.getId()).toUri();
+        return ResponseEntity.created(uri).build();
+
     }
 
 

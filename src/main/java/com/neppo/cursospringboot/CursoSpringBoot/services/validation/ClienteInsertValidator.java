@@ -1,0 +1,44 @@
+package com.neppo.cursospringboot.CursoSpringBoot.services.validation;
+
+
+
+
+import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.TipoCliente;
+import com.neppo.cursospringboot.CursoSpringBoot.dto.ClienteNewDTO;
+import com.neppo.cursospringboot.CursoSpringBoot.resources.exception.FieldMessage;
+import com.neppo.cursospringboot.CursoSpringBoot.services.validation.utils.BR;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert, ClienteNewDTO> {
+    @Override
+    public void initialize(ClienteInsert ann) {
+    }
+    @Override
+    public boolean isValid(ClienteNewDTO objDto, ConstraintValidatorContext context) {
+        List<FieldMessage> list = new ArrayList<>();
+
+        // inclua os testes aqui, inserindo erros na lista
+
+
+
+
+        if(objDto.getTipo().equals(TipoCliente.PESSOAFISICA.getCod()) && !BR.isValidCPF(objDto.getCpf_cnpj())){
+            list.add(new FieldMessage("cpf_cnpj", "CPF inválido"));
+        }
+
+        if(objDto.getTipo().equals(TipoCliente.PESSOAJURIDICA.getCod()) && !BR.isValidCNPJ(objDto.getCpf_cnpj())){
+            list.add(new FieldMessage("cpf_cnpj", "CNPJ inválido"));
+        }
+
+        for (FieldMessage e : list) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(e.getMessage())
+                    .addPropertyNode(e.getFieldName()).addConstraintViolation();
+        }
+        return list.isEmpty();
+    }
+}

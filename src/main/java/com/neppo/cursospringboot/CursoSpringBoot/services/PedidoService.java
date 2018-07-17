@@ -6,10 +6,7 @@ import com.neppo.cursospringboot.CursoSpringBoot.domain.PagamentoComBoleto;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Pedido;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Produto;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.EstadoPagamento;
-import com.neppo.cursospringboot.CursoSpringBoot.repositories.ItemPedidoRepository;
-import com.neppo.cursospringboot.CursoSpringBoot.repositories.PagamentoRepository;
-import com.neppo.cursospringboot.CursoSpringBoot.repositories.PedidoRepository;
-import com.neppo.cursospringboot.CursoSpringBoot.repositories.ProdutoRepository;
+import com.neppo.cursospringboot.CursoSpringBoot.repositories.*;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +31,9 @@ public class PedidoService {
     @Autowired
     private ItemPedidoRepository itemPedidoRepository;
 
+    @Autowired
+    private ClienteService clienteService;
+
     public Pedido buscar(Integer id){
         Optional<Pedido> obj = repo.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException(
@@ -43,6 +43,8 @@ public class PedidoService {
     public Pedido insert(Pedido obj){
         obj.setId(null);
         obj.setIstante(new Date());
+
+        obj.setCliente(clienteService.find(obj.getCliente().getId()));
         obj.getPagamento().setEstado(EstadoPagamento.PENDENTE);
         obj.getPagamento().setPedido(obj);
         if(obj.getPagamento() instanceof PagamentoComBoleto){
@@ -58,9 +60,12 @@ public class PedidoService {
             Produto prod = produtoRepository.getOne(ip.getProduto().getId());
             ip.setPreco(prod.getPreco());
             ip.setPedido(obj);
+            ip.setProduto(prod);
         }
 
         itemPedidoRepository.saveAll(obj.getItens());
+
+        System.out.println(obj);
 
         return obj;
 

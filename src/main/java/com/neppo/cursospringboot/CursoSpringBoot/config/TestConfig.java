@@ -2,6 +2,8 @@ package com.neppo.cursospringboot.CursoSpringBoot.config;
 
 
 import com.neppo.cursospringboot.CursoSpringBoot.services.DBService;
+import com.neppo.cursospringboot.CursoSpringBoot.services.EmailService;
+import com.neppo.cursospringboot.CursoSpringBoot.services.MockEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,11 @@ public class TestConfig {
         dbService.instantiateTestDatabase();
 
         return true;
+    }
+
+    @Bean
+    public EmailService emailService(){
+        return new MockEmailService();
     }
 
 

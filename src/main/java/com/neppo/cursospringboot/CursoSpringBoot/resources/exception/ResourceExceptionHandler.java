@@ -1,6 +1,7 @@
 package com.neppo.cursospringboot.CursoSpringBoot.resources.exception;
 
 
+import com.neppo.cursospringboot.CursoSpringBoot.services.exception.AuthorizationException;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.DataIntegrityException;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,12 @@ public class ResourceExceptionHandler {
             err.addError(x.getField(), x.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request){
+        StandardError err = new StandardError(HttpStatus.FORBIDDEN.value(), e.getMessage(), System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(err);
     }
 
 

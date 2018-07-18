@@ -5,11 +5,14 @@ import com.neppo.cursospringboot.CursoSpringBoot.domain.Cidade;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Cliente;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Cliente;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Endereco;
+import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.Perfil;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.TipoCliente;
 import com.neppo.cursospringboot.CursoSpringBoot.dto.ClienteDTO;
 import com.neppo.cursospringboot.CursoSpringBoot.dto.ClienteNewDTO;
 import com.neppo.cursospringboot.CursoSpringBoot.repositories.ClienteRepository;
 import com.neppo.cursospringboot.CursoSpringBoot.repositories.EnderecoRepository;
+import com.neppo.cursospringboot.CursoSpringBoot.security.UserSS;
+import com.neppo.cursospringboot.CursoSpringBoot.services.exception.AuthorizationException;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.DataIntegrityException;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,13 @@ public class ClienteService {
     private EnderecoRepository enderecoRepository;
 
     public Cliente find(Integer id){
+        UserSS userSS = UserService.authenticated();
+        if(userSS == null || !userSS.hasRole(Perfil.ADMIN) && !id.equals(userSS.getId())){
+            throw new AuthorizationException("Acesso negado");
+        }
+
+
+
         Optional<Cliente> obj = repo.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException(
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));

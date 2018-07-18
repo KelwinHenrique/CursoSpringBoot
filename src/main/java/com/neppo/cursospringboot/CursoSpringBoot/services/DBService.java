@@ -2,6 +2,7 @@ package com.neppo.cursospringboot.CursoSpringBoot.services;
 
 import com.neppo.cursospringboot.CursoSpringBoot.domain.*;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.EstadoPagamento;
+import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.Perfil;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.TipoCliente;
 import com.neppo.cursospringboot.CursoSpringBoot.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,11 +97,18 @@ public class DBService {
         Cliente cli1 = new Cliente(null, "kelhike", "kelhike@gmail.com", "36678912377", TipoCliente.PESSOAFISICA, pe.encode("olamundo"));
         cli1.getTelefones().addAll(Arrays.asList("33175585","991511648"));
 
+        Cliente cli2 = new Cliente(null, "André", "kel@gmail.com", "36678912377", TipoCliente.PESSOAFISICA, pe.encode("olamundo"));
+        cli2.addPerfil(Perfil.ADMIN);
+        cli2.getTelefones().addAll(Arrays.asList("33175585","991511648"));
+
+
+
         Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "38050530", cli1, c1);
         Endereco e2 = new Endereco(null, "Avenida Matos", "105", "Apto 303", "Centro", "38050530", cli1, c2);
 
         cli1.getEnderecos().addAll(Arrays.asList(e1, e2));
-        clienteRepository.saveAll(Arrays.asList(cli1));
+        cli2.getEnderecos().addAll(Arrays.asList(e1));
+        clienteRepository.saveAll(Arrays.asList(cli1,cli2));
         enderecoRepository.saveAll(Arrays.asList(e1,e2));
 
 

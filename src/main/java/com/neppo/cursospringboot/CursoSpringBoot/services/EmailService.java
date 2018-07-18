@@ -1,5 +1,6 @@
 package com.neppo.cursospringboot.CursoSpringBoot.services;
 
+import com.neppo.cursospringboot.CursoSpringBoot.domain.Cliente;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.Pedido;
 import org.springframework.mail.SimpleMailMessage;
 
@@ -15,4 +16,6 @@ public interface EmailService {
     void sendOrderConfirmationHtmlEmail(Pedido obj);
 
     void sendHtmlEmail(MimeMessage msg);
+
+    void sendNewPasswordEmail(Cliente cliente, String newPass);
 }

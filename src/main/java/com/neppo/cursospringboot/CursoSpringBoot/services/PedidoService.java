@@ -1,14 +1,16 @@
 package com.neppo.cursospringboot.CursoSpringBoot.services;
 
 
-import com.neppo.cursospringboot.CursoSpringBoot.domain.ItemPedido;
-import com.neppo.cursospringboot.CursoSpringBoot.domain.PagamentoComBoleto;
-import com.neppo.cursospringboot.CursoSpringBoot.domain.Pedido;
-import com.neppo.cursospringboot.CursoSpringBoot.domain.Produto;
+import com.neppo.cursospringboot.CursoSpringBoot.domain.*;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.EstadoPagamento;
 import com.neppo.cursospringboot.CursoSpringBoot.repositories.*;
+import com.neppo.cursospringboot.CursoSpringBoot.security.UserSS;
+import com.neppo.cursospringboot.CursoSpringBoot.services.exception.AuthorizationException;
 import com.neppo.cursospringboot.CursoSpringBoot.services.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -55,9 +57,7 @@ public class PedidoService {
             boletoService.preencherPgamentoComBoleto(pagto, obj.getIstante());
         }
         obj = repo.save(obj);
-
         pagamentoRepository.save(obj.getPagamento());
-
         for (ItemPedido ip : obj.getItens()){
             ip.setDesconto(0.0);
             Produto prod = produtoRepository.getOne(ip.getProduto().getId());
@@ -65,16 +65,23 @@ public class PedidoService {
             ip.setPedido(obj);
             ip.setProduto(prod);
         }
-
         itemPedidoRepository.saveAll(obj.getItens());
-
         emailService.sendOrderConfirmationEmail(obj);
-
         return obj;
+    }
+
+    public Page<Pedido> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+        UserSS user = UserService.authenticated();
+        if(user == null){
+            throw new AuthorizationException("Acesso negado");
+        }
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction),
+                orderBy);
+
+        Cliente cliente = clienteService.find(user.getId());
 
 
 
-
-
+        return  repo.findByCliente(cliente,pageRequest);
     }
 }

@@ -5,6 +5,7 @@ import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.EstadoPagamento;
 import com.neppo.cursospringboot.CursoSpringBoot.domain.enums.TipoCliente;
 import com.neppo.cursospringboot.CursoSpringBoot.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +31,8 @@ public class DBService {
     private PagamentoRepository pagamentoRepository;
     @Autowired
     private ItemPedidoRepository itemPedidoRepository;
+    @Autowired
+    private BCryptPasswordEncoder pe;
 
     public void instantiateTestDatabase() throws Exception{
         Categoria cat1 = new Categoria(null, "Informática");
@@ -90,7 +93,7 @@ public class DBService {
         estadoRepository.saveAll(Arrays.asList(eest1, eest2));
         cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
 
-        Cliente cli1 = new Cliente(null, "kelhike", "kelhike@gmail.com", "36678912377", TipoCliente.PESSOAFISICA);
+        Cliente cli1 = new Cliente(null, "kelhike", "kelhike@gmail.com", "36678912377", TipoCliente.PESSOAFISICA, pe.encode("olamundo"));
         cli1.getTelefones().addAll(Arrays.asList("33175585","991511648"));
 
         Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "38050530", cli1, c1);
